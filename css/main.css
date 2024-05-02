@@ -1,0 +1,125 @@
+body {
+    font-family: Ubuntu;
+}
+
+
+/* Каталог товаров */
+
+.good-item {
+    margin: 10px 0;
+    padding: 20px;
+    border: solid 1px gray;
+    border-radius: 3px;
+}
+
+.good-item__id {
+    padding-top: 30px;
+    color: steelblue;
+}
+
+.good-item__name {
+    padding-top: 10px;
+    font-size: 1.1em;
+}
+
+.good-item__price {
+    padding-top: 10px;
+    color: red;
+}
+
+.good-item__btn-add {
+    margin-top: 30px;
+}
+
+
+/* Каталог товаров с фильтрами*/
+
+.small-good-item {
+    border: solid 1px gray;
+    padding: 5px;
+    margin-top: 3px;
+    list-style: none;
+    border-radius: 2px;
+}
+
+.small-good-item__img {
+    max-width: 60%;
+}
+
+.small-good-item__name {
+    color: steelblue;
+}
+
+.small-good-item__price {
+    color: red;
+}
+
+
+
+/* Корзина */
+
+.cart-item__btn-dec-count {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.cart-item__btn-inc-count {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.cart-item__btn-remove {
+    cursor: pointer;
+}
+
+
+/* Сравнение товаров */
+
+.compare-table th {
+    text-align: center;
+}
+
+.compare-table th:first-child {
+    text-align: left;
+    vertical-align: middle;
+}
+
+.compare-table__good {
+    font-size: 1.1em;
+    color: steelblue;
+}
+
+.compare-table__photo {
+    max-width: 150px;
+}
+
+.compare-table__price {
+    color: red;
+}
+
+.compare-table__remove {
+    color: steelblue;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: normal;
+    margin-top: 10px;
+    text-decoration: underline;
+}
+
+.compare-table tbody tr td:first-child {
+    font-weight: bold;
+}
+
+
+.compare-table[data-compare="all"] tbody tr {
+     display: table-row;
+}
+
+.compare-table[data-compare="equal"] tbody tr:not(.-equal) {
+    display: none;
+}
+
+.compare-table[data-compare="not-equal"] tbody tr.-equal {
+    display: none;
+}
+
