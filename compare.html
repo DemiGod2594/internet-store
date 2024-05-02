@@ -22,9 +22,9 @@
         </ul>
         <br>
         <br>
-        <div id="goods" class="col-md-12">
+     <!--   <div id="goods" class="col-md-12">
             <img src="img/loading.gif" alt="" rel="nofollow">
-        </div>
+        </div> -->
     </div>
 
     <div id="goods" class="col-md-12">
@@ -75,7 +75,7 @@
             <td><%= prop.prop %></td>
  
             <% _.each(goods, function(goodId) { %>
-            <td><%= (_.findWhere(prop.values, {goodId: goodId}) || {value: '—'}).value %></td>
+            <td><%= (_.findWhere(prop.values, {goodId: goodId}) || {value: '&mdash;'}).value %></td>
             <% }); %>
         </tr>
         <% }); %>

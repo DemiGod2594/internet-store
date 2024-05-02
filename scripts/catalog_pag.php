@@ -1,20 +1,20 @@
 <?php
 
 include_once './common.php';
- 
+
 // Получение данных из массива _GET
 function getOptions() {
     $categoryId = (isset($_GET['category'])) ? (int)$_GET['category'] : 0;
     $page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
     $limit = (isset($_GET['limit'])) ? (int)$_GET['limit'] : 5;
- 
+
     return array(
         'category_id' => $categoryId,
         'page' => $page,
         'limit' => $limit
     );
 }
- 
+
 // Получение товаров
 function getGoods($options, $conn) {
     // Вычисляем номер страницы и параметры для sql limit
@@ -24,9 +24,9 @@ function getGoods($options, $conn) {
 
     // Категория, если есть
     $categoryId = $options['category_id'];
-    $categoryWhere = 
+    $categoryWhere =
         ($categoryId !== 0)
-            ? ' g.category_id = $category and '
+            ? " g.category_id = $categoryId and "
             : '';
 
     // Заготовка запроса, на нем базируется запрос с общим количеством товаров и запрос с сортировками и страницами
@@ -48,7 +48,7 @@ function getGoods($options, $conn) {
     ";
 
     // Запрос на общее количество товаров с указанной категорией
-    $queryCountAll = 'select count(*) count_all from (' . $queryBase . ') as tmp ';
+    $queryCountAll = 'select count(*) count_all from (' . $queryBase . ') as tmp';
     $data = $conn->query($queryCountAll);
     $row = $data->fetch_assoc();
     $countAll = (int)$row['count_all'];
@@ -67,18 +67,18 @@ function getGoods($options, $conn) {
         'goods' => $goods
     );
 }
- 
- 
+
+
 try {
     // Подключаемся к базе данных
     $conn = connectDB();
- 
+
     // Получаем данные от клиента
     $options = getOptions();
- 
+
     // Получаем товары
     $data = getGoods($options, $conn);
- 
+
     // Возвращаем клиенту успешный ответ
     echo json_encode(array(
         'code' => 'success',

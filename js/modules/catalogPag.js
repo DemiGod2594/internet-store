@@ -15,7 +15,7 @@ var catalogPag = (function($) {
 
     var ui = {
         $categoryBtn: $('.js-category'),
-        $limit: $('#page-limit'),
+        $limit: $('#pages-limit'),
         $pag: $('#pagination'),
         $goods: $('#goods'),
         $goodsInfo: $('#goods-info'),
@@ -25,9 +25,8 @@ var catalogPag = (function($) {
         big: _.template($('#goods-template-big').html()),
         compact: _.template($('#goods-template-compact').html()),
         list: _.template($('#goods-template-list').html())
-    }
-
-    var  pagTemplate = _.template($('#pagination-template').html());
+    },
+	 pagTemplate = _.template($('#pagination-template').html());
 
     // Привязка событий
     function _bindHandlres() {

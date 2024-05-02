@@ -1,17 +1,8 @@
 'use strict';
 
 // Модуль сравнения товаров
-
 var compare = (function($) {
-
-    // Инициализация модуля
-    function init() {
-        _bindHandlers();
-        if (ui.$body.attr('data-page') === 'compare') {
-            _initComparePage();
-        }
-    }
-
+ 
     var ui = {
         $body: $('body'),
         elAddToCompare: '.js-add-to-compare',
@@ -20,7 +11,7 @@ var compare = (function($) {
         elCompareFilters: '.js-compare-filter',
         elCompareRemove: '.js-compare-remove'
     };
-
+    
     var tpl = {
         filters: _.template($('#compare-filters-template').html() || ''),
         header: _.template($('#compare-header-template').html() || ''),
@@ -29,15 +20,37 @@ var compare = (function($) {
 
     var settings = {
         cookie: {
-            goods: 'compared_good'
+            goods: 'compared_goods',
+            category: 'compared_category'
         }
     };
 
-    // Навешиваем события
-    function _bindHandlers() {
-        ui.$body.on('click', ui.elAddToCompare, _onClickAddToCompare);
-        ui.$body.on('click', ui.elCompareFilters, _onClickCompareFilters);
-        ui.$body.on('click', ui.elCompareRemove, _onClickCompareRemove);
+    // Добавление товара к сравнению
+    function _onClickAddToCompare(e) {
+        var $button = $(e.target),
+            goodId = $button.attr('data-id'),
+            categoryId = $button.attr('data-category-id'),
+            comparedGoodsStr = $.cookie(settings.cookie.goods),
+            comparedGoodsArr = comparedGoodsStr ? comparedGoodsStr.split(',') : [],
+            comparedCategoryId = $.cookie(settings.cookie.category);
+
+        // Проверяем, совпадают ли категории товаров
+        if (comparedCategoryId && categoryId !== comparedCategoryId) {
+            alert('Не допускается сравнивать товары разных категорий');
+            return false;
+        }
+
+        // Проверяем, нет ли этого товара уже в куках
+        if (comparedGoodsArr.indexOf(goodId) === -1) {
+            // Добавляем новый товар в массив сравниваемых
+            comparedGoodsArr.push(goodId);
+            $.cookie(settings.cookie.goods, comparedGoodsArr.join(','), {expires: 365, path: '/'});
+            $.cookie(settings.cookie.category, categoryId, {expires: 365, path: '/'});
+            updateCompareTab();
+            alert('Товар добавлен к сравнению!');
+        } else {
+            alert('Этот товар уже есть в списке сравниваемых');
+        }
     }
 
     // Смена фильтра
@@ -64,6 +77,13 @@ var compare = (function($) {
         document.location.reload();
     }
 
+    // Навешиваем события
+    function _bindHandlers() {
+        ui.$body.on('click', ui.elAddToCompare, _onClickAddToCompare);
+        ui.$body.on('click', ui.elCompareFilters, _onClickCompareFilters);
+        ui.$body.on('click', ui.elCompareRemove, _onClickCompareRemove);
+    }
+
     // Обновление количества сравниваемых товаров во вкладке
     function updateCompareTab() {
         var comparedGoodsStr = $.cookie(settings.cookie.goods),
@@ -78,47 +98,92 @@ var compare = (function($) {
          ui.$compareTab.find('a').attr('href', compareHref);
     }
 
-    // Добавление товара к сравнению
-    function _onClickAddToCompare(e) {
-        var $button = $(e.target),
-            goodId = $button.attr('data-id'),
-            categoryId = $button.attr('data-category-id'),
-            comparedGoodsStr = $.cookie(settings.cookie.goods),
-            comparedGoodsArr = comparedGoodsStr ? comparedGoodsStr.split(',') : [];
-            comparedCategoryId = $.cookie(settings.cookie.category);
+   // Получение массива основных свойств из response.data.goods
+   function _getBaseProps(goods) {
+        // Конфиг для базовых свойств
+        var baseProps = [{
+            key: 'brand',
+            prop: 'Бренд'
+        }, {
+            key: 'price',
+            prop: 'Цена'
+        }, {
+            key: 'rating',
+            prop: 'Рейтинг'
+        }];
 
-        // Проверяем, совпадают ли категории товаров
-        if (comparedCategoryId && categoryId !== comparedCategoryId) {
-            alert('Не допускается сравнивать товары разных категорий');
-            return false;
-        }
+        var valuesWithIds, values, equal;
 
-        // Проверяем, нет ли этого товара уже в куках
-        if (comparedGoodsArr.indexOf(goodId) === -1) {
-            // Добавляем новый товар в массив сравниваемых
-            comparedGoodsArr.push(goodId);
-            $.cookie(settings.cookie.goods, comparedGoodsArr.join(','), {expires: 365, path: '/'});
-            $.cookie(settings.cookie.category, categoryId, {expires: 365, path: '/'});
-            updateCompareTab();
-            alert('Товар добавлен к сравнению!');
-        } else {
-            alert('Этот товар уже есть в списке сравниваемых');
-        }
+        // Возвращаем свойства со списком значений
+        return _.map(baseProps, function(item) {
+
+            // Массив объектов из id и значений для конкретного свойства
+            valuesWithIds = _.map(goods, function(good) {
+                return {
+                    goodId: good.good_id,
+                    value: good[item.key]
+                }
+            });
+
+            // Массив значений конкретного свойства
+            values = _.pluck(valuesWithIds, 'value');
+
+            // Одинаковые ли значения во всех товарах
+            equal = _.uniq(values).length === 1;
+
+            // Возвращаем объект с набором данных
+            return {
+                prop: item.prop,
+                values: valuesWithIds,
+                equal: equal
+            }
+        });
+    }
+
+    // Получение массива дополнительных свойств из response.data.props
+    function _getAdditionalProps(props) {
+        var valuesWithIds, values, equal;
+        return _.chain(props)
+            .groupBy('prop')
+            .map(function(valuesArray, key) {
+ 
+            // Массив объектов из id и значений для конкретного свойства
+            valuesWithIds = _.map(valuesArray, function(item) {
+                return {
+                    goodId: item.good_id,
+                    value: item.value
+                }
+            });
+ 
+            // Массив значений конкретного свойства
+            values = _.pluck(valuesWithIds, 'value');
+ 
+            // Одинаковые ли значения во всех товарах
+            equal = (values.length > 1) && (_.uniq(values).length === 1);
+ 
+            return {
+                prop: key,
+                values: valuesWithIds,
+                equal: equal
+            }
+        })
+        .value();
     }
 
     // Рендер таблицы сравнения
     function _renderCompareTable(response) {
         var filters = [{
-            value: 'all',
-            title: 'Все',
-            checked: true
-        }, {
-            value: 'equal',
-            title: 'Совпадающие'
-        }, {
-            value: 'not-equal',
-            title: 'Различающиеся' 
-        }];
+                value: 'all',
+                title: 'Все',
+                checked: true
+            }, {
+                value: 'equal',
+                title: 'Совпадающие'
+            }, {
+                value: 'not-equal',
+                title: 'Различающиеся' 
+            }];
+
         var goods = response.data.goods;
 
         var allProps = _.union(
@@ -128,11 +193,11 @@ var compare = (function($) {
 
         // Рендерим фильтры
         ui.$compareTable.find('thead tr').html(tpl.filters({
-            button: filters
+            buttons: filters
         }));
 
         // Рендерим товары в шапке таблицы
-        ui.$compareTable.find('thread tr').append(tpl.header({
+        ui.$compareTable.find('thead tr').append(tpl.header({
             goods: goods
         }));
 
@@ -182,77 +247,14 @@ var compare = (function($) {
         });
     }
     
-    // Получение массива основных свойств из response.data.goods
-    function _getBaseProps(goods) {
-        // Конфиг для базовых свойств
-        var baseProps = [{
-            key: 'brand',
-            prop: 'Бренд'
-        }, {
-            key: 'price',
-            prop: 'Цена'
-        }, {
-            key: 'rating',
-            prop: 'Рейтинг'
-        }];
- 
-        var valuesWithIds, values, equal;
- 
-        // Возвращаем свойства со списком значений
-        return _.map(baseProps, function(item) {
- 
-            // Массив объектов из id и значений для конкретного свойства
-            valuesWithIds = _.map(goods, function(good) {
-                return {
-                    goodId: good.good_id,
-                    value: good[item.key]
-                }
-            });
- 
-            // Массив значений конкретного свойства
-            values = _.pluck(valuesWithIds, 'value');
- 
-            // Одинаковые ли значения во всех товарах
-            equal = _.uniq(values).length === 1;
- 
-            // Возвращаем объект с набором данных
-            return {
-                prop: item.prop,
-                values: valuesWithIds,
-                equal: equal
-            }
-        });
+    // Инициализация модуля
+    function init() {
+        _bindHandlers();
+        if (ui.$body.attr('data-page') === 'compare') {
+            _initComparePage();
+        }
     }
 
-    // Получение массива дополнительных свойств из response.data.props
-    function _getAdditionalProps(props) {
-        var valuesWithIds, values, equal;
-        return _.chain(props)
-            .groupBy('prop')
-            .map(function(valuesArray, key) {
- 
-            // Массив объектов из id и значений для конкретного свойства
-            valuesWithIds = _.map(valuesArray, function(item) {
-                return {
-                    goodId: item.good_id,
-                    value: item.value
-                }
-            });
- 
-            // Массив значений конкретного свойства
-            values = _.pluck(valuesWithIds, 'value');
- 
-            // Одинаковые ли значения во всех товарах
-            equal = (values.length > 1) && (_.uniq(values).length === 1);
- 
-            return {
-                prop: key,
-                values: valuesWithIds,
-                equal: equal
-            }
-        })
-        .value();
-    }
 
     // Экспортируем наружу
     return {

@@ -28,6 +28,10 @@
                 <button type="button" data-category="2" class="btn btn-default js-category">Смартфоны</button>
                 <button type="button" data-category="3" class="btn btn-default js-category">Видеокарты</button>
             </div>
+	    <div class="btn-group col-md-6">
+		<button type="button" data-theme="big" class="btn btn-default js-theme" title="Большие фото"><span class="glyphicon glyphicon-th-large"></span></button>
+		<button type="button" data-theme="compact" class="btn btn-default js-theme" title="Компактный вид"><span class="glyphicon glyphicon-th"></span></button>
+                <button type="button" data-theme="list" class="btn btn-default js-theme" title="Списком"><span class="glyphicon glyphicon-list"></span></button>
         </div>
         <br>
         <div class="row">
@@ -44,39 +48,18 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <ul id="pagination" class="pagination">
-                    <li data-page="1"><a href="">&laquo;</a></li>
-                    <li data-page="2"><a href="">&lt;</a></li>
-                    <li data-page="1"><a href="">1</a></li>
-                    <li data-page="2"><a href="">2</a></li>
-                    <li data-page="3" class="active"><a href="">3</a></li>
-                </ul>
+                <ul id="pagination" class="pagination"></ul>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                Показаны товары: <span id="goods-info">1 - 3 из 5</span>
+                Показаны товары: <span id="goods-info"></span>
             </div>
         </div>
         <ul id="goods" class="list-unstyled">
             <img src="img/loading.gif" alt="">
         </ul>
     </div>
-
-    <div class="row">
-        <div class="btn-group col-md-6">
-            <button type="button" data-category="0" class="btn btn-default active js-category">Все категории</button>
-            <button type="button" data-category="1" class="btn btn-default js-category">Ноутбуки</button>
-            <button type="button" data-category="2" class="btn btn-default js-category">Смартфоны</button>
-            <button type="button" data-category="3" class="btn btn-default js-category">Видеокарты</button>
-        </div>
-        <div class="btn-group col-md-6">
-            <button type="button" data-theme="big" class="btn btn-default js-theme" title="Большие фото"><span class="glyphicon glyphicon-th-large"></span></button>
-            <button type="button" data-theme="compact" class="btn btn-default active js-theme" title="Компактный вид"><span class="glyphicon glyphicon-th"></span></button>
-            <button type="button" data-theme="list" class="btn btn-default js-theme" title="Списком"><span class="glyphicon glyphicon-list"></span></button>
-        </div>
-    </div>
-    
 
     <script id="goods-template-compact" type="text/template">
         <% _.each(goods, function(item) { %>
