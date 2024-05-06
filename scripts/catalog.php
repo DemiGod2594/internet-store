@@ -19,26 +19,13 @@ function connectDB() {
         else
             return $conn;
     }
-    /* check connection */
-    if ($conn->connect_errno) {
-        printf("Connect failed: %s\n", $conn->connect_error);
-        exit();
-    }
-
-    /* check if server is alive */
-    if ($conn->ping()) {
-        printf ("Our connection is ok!\n");
-    } else {
-        printf ("Error: %s\n", $conn->error);
-    }
 }
 
-  
 // Получение данных из массива _GET
 function getOptions() {
     // Категория цены
     $categoryId = (isset($_GET['category'])) ? (int)$_GET['category'] : 0;
-    $minPrice = (isset($_GET['minc_prie'])) ? (int)$_GET['min_price'] : 0;
+    $minPrice = (isset($_GET['min_priсe'])) ? (int)$_GET['min_price'] : 0;
     $maxPrice = (isset($_GET['max_price'])) ? (int)$_GET['max_price'] : 1000000;
     $needsData = (isset($_GET['needs_data'])) ? explode(',', $_GET['needs_data']) : array();
 
@@ -85,19 +72,19 @@ function getGoods($options, $conn) {
     
     $query = "
         select
-            g.id as good_id
+            g.id as good_id,
             g.good as good,
             b.brand as brand,
             g.price as price,
             g.rating as rating,
-            g.photo as photo
+            g.photo as photo,
             g.category_id as category_id
         from
             goods as g,
             brands as b
         where
             $categoryWhere
-            $brandWhere
+            $brandsWhere
             g.brand_id = b.id and
             (g.price between $minPrice and $maxPrice)
         order by $sortBy $sortDir
@@ -144,6 +131,7 @@ function getPrices($categoryId, $conn) {
     return $data->fetch_assoc();
 }
 
+// Получение всех данных
 function getData($options, $conn) {
     $result = array(
         'goods' => getGoods($options, $conn)

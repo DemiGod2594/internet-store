@@ -26,7 +26,7 @@ function getGoods($options, $conn) {
     $categoryId = $options['category_id'];
     $categoryWhere = 
         ($categoryId !== 0)
-            ? ' g.category_id = $category and '
+            ? " g.category_id = $category and "
             : '';
 
     // Заготовка запроса, на нем базируется запрос с общим количеством товаров и запрос с сортировками и страницами
