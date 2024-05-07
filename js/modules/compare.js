@@ -20,7 +20,7 @@ var compare = (function($) {
 
     var settings = {
         cookie: {
-            goods: 'compared_good',
+            goods: 'compared_goods',
             category: 'compared_category'
         }
     };
@@ -197,7 +197,7 @@ var compare = (function($) {
         }));
 
         // Рендерим товары в шапке таблицы
-        ui.$compareTable.find('thread tr').append(tpl.header({
+        ui.$compareTable.find('thead tr').append(tpl.header({
             goods: goods
         }));
 

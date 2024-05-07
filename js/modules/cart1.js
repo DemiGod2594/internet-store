@@ -3,8 +3,8 @@
 // Модуль корзины
 var cart = (function($) {
 
-    var cartData, // данные коризны - массив объектов
-        opts = {}; // настройка модуля
+    var cartData,
+        opts = {};
 
     // Инициализация модуля
     function init(options) {
@@ -22,52 +22,52 @@ var cart = (function($) {
     // Инициализируем настройки
     function _initOptions(options) {
         var defaultOptions = {
-            renderCartOnInit: true, // рендерить ли корзину при инициализации
-            renderMenuCartOnInit: true, // рендерить ли количество товаров в меню при инициализации
-            elAddToCart: '.js-add-to-cart', // селектор для кнопки добавления в корзину
-            attrId: 'data-id', // дата-атрибут для id товара
-            attrName: 'data-name', // дата-атрибут для названия товара
-            attrPrice: 'data-price', // дата-атрибут для цены товара
-            attrDelta: 'data-delta', // дата-атрибут, показывающий, на сколько нужно изменить количество товара в корзине (-1 и 1)
-            elCart: '#cart', // селектор для содержимого корзины
-            elTotalCartCount: '#total-cart-count', // селектор для количества товаров в корзине
-            elTotalCartSumma: '#total-cart-summa', // селектор для общей суммы заказа
-            elCartItem: '.js-cart-item', // селектор для отдельного пункта корзины
-            elCartCount: '.js-count', // селектор для количества отдельного товара
-            elCartSumma: '.js-summa', // селектор для суммы отдельного товара
-            elChangeCount: '.js-change-count', // селектор для кнопок изменения количества
-            elRemoveFromCart: '.js-remove-from-cart', // селектор для кнопки удаления из корзины
-            elOrder: '#order' // селектор для кнопки оформления заказа 
-        }
+            renderCartOnInit: true,
+            renderMenuCartOnInit: true,
+            elAddToCart: '.js-add-to-cart',
+            attrId: 'data-id',
+            attrName: 'data-name',
+            attrPrice: 'data-price',
+            attrDelta: 'data-delta',
+            elCart: '#cart',
+            elTotalCartCount: '#total-cart-count',
+            elTotalCartSumma: '#total-cart-summa',
+            elCartItem: '.js-cart-item',
+            elCartCount: '.js-count',
+            elCartSumma: '.js-summa',
+            elChangeCount: '.js-change-count',
+            elRemoveFromCart: '.js-remove-from-cart'
+        };
         _.defaults(options || {}, defaultOptions);
         opts = _.clone(options);
     }
 
-    // Навешиваем события
+    // Навешивам события
     function _bindHandlers() {
         _onClickAddBtn();
         _onClickChangeCountInCart();
         _onClickRemoveFromCart();
-        _onclickOrder();
     }
 
-    // Функции работы с данными
+
+
+
 
     // Получаем данные
     function updateData() {
         cartData = JSON.parse(localStorage.getItem('cart')) || [];
         return cartData;
     }
-    
+
     // Возвращаем данные
     function getData() {
         return cartData;
     }
-    
+
     // Сохраняем данные в localStorage
     function saveData() {
         localStorage.setItem('cart', JSON.stringify(cartData));
-	return cartData;
+        return cartData;
     }
 
     // Очищаем данные
@@ -81,13 +81,13 @@ var cart = (function($) {
     function getById(id) {
         return _.findWhere(cartData, {id: id});
     }
-    
-    // Добавление товара в коллекцию 
+
+    // Добавление товара в коллекцию
     function add(item) {
         var oldItem;
         updateData();
         oldItem = getById(item.id);
-        if (!oldItem) {
+        if(!oldItem) {
             cartData.push(item);
         } else {
             oldItem.count = oldItem.count + item.count;
@@ -95,7 +95,7 @@ var cart = (function($) {
         saveData();
         return item;
     }
-    
+
     // Удаление товара из коллекции
     function remove(id) {
         updateData();
@@ -105,7 +105,7 @@ var cart = (function($) {
         saveData();
         return cartData;
     }
-    
+
     // Изменение количества товара в коллекции
     function changeCount(id, delta) {
         var item;
@@ -120,23 +120,26 @@ var cart = (function($) {
         }
         return _.findWhere(cartData, {id: id}) || {};
     }
-    
+
     // Возвращаем количество товаров (количество видов товаров в корзине)
     function getCount() {
         return _.size(cartData);
     }
 
-    // Возвращаем общее количество товаров
+    // Возвращаем общее количество товаров 
     function getCountAll() {
         return _.reduce(cartData, function(sum, item) {return sum + item.count}, 0);
-    } 
+    }
 
-    // Возращаем общую сумму
+    // Возвращаем общую сумму
     function getSumma() {
         return _.reduce(cartData, function(sum, item) {return sum + item.count * item.price}, 0);
     }
 
-    // Функции рендеринга
+
+
+
+
 
     // Рендерим корзину
     function renderCart() {
@@ -156,12 +159,12 @@ var cart = (function($) {
 
     // Рендерим общую сумму товаров
     function renderTotalCartSumma() {
-        $(opts.elTotalCartSumma).html(getSumma());
+        $(opts.elTotalCartSumma).html(getSumma());            
     }
 
-    // Функции-обработчики событий
 
-    // Поиск продукта в коризне по id
+
+    // Поиск продукта в корзине по id
     function findCartElemById(id) {
         return $(opts.elCartItem + '[' + opts.attrId + '="'+id+'"]');
     }
@@ -175,7 +178,7 @@ var cart = (function($) {
                 name: $this.attr(opts.attrName),
                 price: +$this.attr(opts.attrPrice),
                 count: 1
-            });
+            });    
             renderMenuCart();
             alert('Товар добавлен в корзину');
         });
@@ -200,26 +203,21 @@ var cart = (function($) {
         });
     }
 
-    // Удаляем товар из корзины
+    // Удаляем товар из корзине
     function _onClickRemoveFromCart() {
         $('body').on('click', opts.elRemoveFromCart, function(e) {
             if(!confirm('Удалить товар из корзины?')) return false;
             var $this = $(this),
                 id = +$this.attr(opts.attrId),
                 $cartElem = findCartElemById(id);
-            remove(id)
+            remove(id);
             $cartElem.remove();
             renderMenuCart();
             renderTotalCartSumma();
         });
     }
-    
-    // Оформляем заказ
-    function _onclickOrder() {
-        $('body').on('click', opts.elOrder, function(e) {
-            alert('Офомрляем заказ: - ')
-        })
-    }
+
+
 
     // Экспортируем наружу
     return {
@@ -236,6 +234,5 @@ var cart = (function($) {
         getCountAll: getCountAll,
         getSumma: getSumma
     }
-
 
 })(jQuery);

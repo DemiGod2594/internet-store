@@ -3,37 +3,30 @@
 // Модуль каталога с пагинацией
 var catalogPag = (function($) {
  
-    var ui = {
-        $categoryBtn: $('.js-category'),
-        $themeBtn: $('.js-theme'),
-        $limit: $('#page-limit'),
-        $pag: $('#pagination'),
-        $goods: $('#goods'),
-        $goodsInfo: $('#goods-info')
-    };
-    var goodsTemplate = {
-        big: _.template($('#goods-template-big').html()),
-        compact: _.template($('#goods-template-compact').html()),
-        list: _.template($('#goods-template-list').html())
-    },
-        pagTemplate = _.template($('#pagination-template').html());
-
-
     // Инициализация модуля
     function init() {
         _setTheme();
         _getData({
             resetPage: true
         });
-    
+
         _bindHandlres();
     }
 
-    // Устанавливаем тему, делаем нужную кнопку активной
-    function _setTheme() {
-        var theme = localStorage.getItem('theme') || 'compact';
-        $('.js-theme[data-theme="' + theme + '"]').addClass('active');
-    }
+    var ui = {
+        $categoryBtn: $('.js-category'),
+        $limit: $('#pages-limit'),
+        $pag: $('#pagination'),
+        $goods: $('#goods'),
+        $goodsInfo: $('#goods-info'),
+        $themeBtn: $('.js-theme')
+    };
+    var goodsTemplate = {
+        big: _.template($('#goods-template-big').html()),
+        compact: _.template($('#goods-template-compact').html()),
+        list: _.template($('#goods-template-list').html())
+    },
+	 pagTemplate = _.template($('#pagination-template').html());
 
     // Привязка событий
     function _bindHandlres() {
@@ -41,17 +34,6 @@ var catalogPag = (function($) {
         ui.$limit.on('change', _changeLimit);
         ui.$pag.on('click', 'a', _changePage);
         ui.$themeBtn.on('click', _changeTheme);
-    }
-
-    // Смена категории
-    function _changeCategory(e) {
-        var $category = $(e.target);
-        ui.$categoryBtn.removeClass('active');
-        $category.addClass('active');
-
-        _getData({
-            resetPage: true
-        });
     }
 
     // Смена вида каталога (темы)
@@ -66,39 +48,6 @@ var catalogPag = (function($) {
         });
 
         localStorage.setItem('theme', theme);
-    }
-
-
-    // Смена лимита
-    function _changeLimit() {
-        _getData({
-            resetPage: true
-        });
-    }
-
-    // Смена страницы
-    function _changePage(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        var $page = $(e.target).closest('li');
-        ui.$pag.find('li').removeClass('active');
-        $page.addClass('active');
-
-        _getData();
-    }
-
-    // Получение опций-настроек для товаров
-    function _getOptions(resetPage) {
-        var categoryId = +$('.js-category.active').attr('data-category'),
-            page = !resetPage ? +ui.$pag.find('li.active').attr('data-page') : 1,
-            limit = +ui.$limit.val();
-
-        return {
-            category: categoryId,
-            page: page,
-            limit: limit
-        }
     }
 
     // Получение данных
@@ -129,7 +78,24 @@ var catalogPag = (function($) {
         });
     }
 
+    // Устанавливаем тему, делаем нужную кнопку активной
+    function _setTheme() {
+        var theme = localStorage.getItem('theme') || 'compact';
+        $('.js-theme[data-theme="' + theme + '"]').addClass('active');
+    }
+    
+    // Получение опций-настроек для товаров
+    function _getOptions(resetPage) {
+        var categoryId = +$('.js-category.active').attr('data-category'),
+            page = !resetPage ? +ui.$pag.find('li.active').attr('data-page') : 1,
+            limit = +ui.$limit.val();
 
+        return {
+            category: categoryId,
+            page: page,
+            limit: limit
+        }
+    }
 
     // Рендер каталога
     function _renderCatalog(goods) {
@@ -158,6 +124,35 @@ var catalogPag = (function($) {
         }));
     }
     
+    // Смена категории
+    function _changeCategory(e) {
+        var $category = $(e.target);
+        ui.$categoryBtn.removeClass('active');
+        $category.addClass('active');
+
+        _getData({
+            resetPage: true
+        });
+    }
+
+    // Смена лимита
+    function _changeLimit() {
+        _getData({
+            resetPage: true
+        });
+    }
+
+    // Смена страницы
+    function _changePage(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var $page = $(e.target).closest('li');
+        ui.$pag.find('li').removeClass('active');
+        $page.addClass('active');
+
+        _getData();
+    }
     
     // Экспортируем наружу
     return {
