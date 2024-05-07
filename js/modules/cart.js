@@ -37,7 +37,7 @@ var cart = (function($) {
             elCartSumma: '.js-summa', // селектор для суммы отдельного товара
             elChangeCount: '.js-change-count', // селектор для кнопок изменения количества
             elRemoveFromCart: '.js-remove-from-cart', // селектор для кнопки удаления из корзины
-            elOrder: '#order' // селектор для кнопки оформления заказа 
+            elOrder: '#order'
         }
         _.defaults(options || {}, defaultOptions);
         opts = _.clone(options);
@@ -111,13 +111,13 @@ var cart = (function($) {
         updateData();
         item = getById(id);
         if(item) {
-            item.count = item.count = delta;
+            item.count = item.count + delta;
             if (item.count < 1) {
                 remove(id);
             }
             saveData();
         }
-        return getById(id) || {};
+        return _.findWhere(cartData, {id: id}) || {};
     }
     
     // Возвращаем количество товаров (количество видов товаров в корзине)
@@ -126,7 +126,7 @@ var cart = (function($) {
     }
 
     // Возвращаем общее количество товаров
-    function getCountALL() {
+    function getcounAll() {
         return _.reduce(cartData, function(sum, item) {return sum + item.count}, 0);
     } 
 
@@ -149,8 +149,8 @@ var cart = (function($) {
 
     // Рендерим количество товаров в меню
     function renderMenuCart() {
-        var countALL = getCountALL();
-        $(opts.elTotalCartCount).html(countALL !== 0 ? countALL : '');
+        var counAll = getcounAll();
+        $(opts.elTotalCartCount).html(counAll !== 0 ? counAll : '');
     }
 
     // Рендерим общую сумму товаров
@@ -216,7 +216,7 @@ var cart = (function($) {
     // Оформляем заказ
     function _onclickOrder() {
         $('body').on('click', opts.elOrder, function(e) {
-            alert('Офомрляем заказ: - ')
+            if(!confirm("Вы точно хотите оформить заказ?"));
         })
     }
 
@@ -232,7 +232,7 @@ var cart = (function($) {
         remove: remove,
         changeCount: changeCount,
         getCount: getCount,
-        getCountAll: getCountALL,
+        getcounAll: getcounAll,
         getSumma: getSumma
     }
 
